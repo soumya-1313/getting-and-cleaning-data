@@ -25,6 +25,19 @@ x_data <- rbind(train_x, test_x)
 y_data <- rbind(train_y, test_y)
 subject_data <- rbind(train_subject, test_subject)
 
+# Step 1: Clean feature names to match merged_data
+features$clean_feature <- make.names(features$feature)
+
+# Step 2: Extract mean and std columns
+mean_std_columns <- grep("mean\\(\\)|std\\(\\)", features$feature, value = TRUE)
+cleaned_mean_std_columns <- make.names(mean_std_columns)
+
+# Step 3: Verify matching columns
+matched_columns <- intersect(cleaned_mean_std_columns, colnames(merged_data))
+
+# Step 4: Subset merged_data using matched columns
+tidy_data <- merged_data %>% select(subject, code, all_of(matched_columns))
+
 # Combine all data into one dataset
 merged_data <- cbind(subject_data, y_data, x_data)
 # Extract columns with mean and std measurements
